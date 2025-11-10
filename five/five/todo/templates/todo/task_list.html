@@ -1,0 +1,42 @@
+{% extends "todo/base.html" %}
+{% block content %}
+<form method="post" action="{% url 'task_create' %}" class="box">
+  {% csrf_token %}
+  <div class="field is-grouped">
+    <div class="control is-expanded">
+      <input class="input" type="text" name="name" placeholder="New task..." required>
+    </div>
+    <div class="control">
+      <input class="input" type="date" name="due_date">
+    </div>
+    <div class="control">
+      <button class="button is-primary" type="submit">Add</button>
+    </div>
+  </div>
+</form>
+
+<table class="table is-fullwidth is-striped">
+  <thead>
+    <tr><th>Done</th><th>Task</th><th>Due</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {% for task in tasks %}
+      <tr>
+        <td>
+          <a href="{% url 'task_toggle' task.pk %}">
+            {% if task.complete %}✅{% else %}⬜{% endif %}
+          </a>
+        </td>
+        <td>{% if task.complete %}<s>{{ task.name }}</s>{% else %}{{ task.name }}{% endif %}</td>
+        <td>{{ task.due_date|default:"-" }}</td>
+        <td>
+          <a class="button is-small" href="{% url 'task_update' task.pk %}">Edit</a>
+          <a class="button is-small is-danger" href="{% url 'task_delete' task.pk %}">Delete</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4">No tasks yet. Add one above.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
